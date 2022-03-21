@@ -1,4 +1,4 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
@@ -72,7 +72,7 @@ const AuthForm = () => {
           // Something happened in setting up the request that triggered an Error
           return swal(console.log("Error", error.message));
         }
-        console.log(error.config);
+        
       });
     setIsLoading(false);
     const expirationTime = new Date(new Date().getTime() + 3600000);

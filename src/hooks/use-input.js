@@ -1,10 +1,5 @@
 import { useReducer } from "react";
 
-// const initialInputState = {
-//   value: '',
-//   isTouched: false,
-// };
-
 const inputStateReducer = (state, action) => {
   if (action.type === "INPUT") {
     return { value: action.value, isTouched: state.isTouched };

@@ -11,8 +11,8 @@ const Layout = (props) => {
         <Row>
           <Col
             md={{
-              offset: 2,
-              size: 8,
+              offset: 1,
+              size: 10,
             }}
             sm="12"
           >
