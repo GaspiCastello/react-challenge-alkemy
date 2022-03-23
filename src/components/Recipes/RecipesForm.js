@@ -1,12 +1,13 @@
-import React, { useEffect } from "react";
-import ReactDOM from "react-dom";
-import { Formik, Form, useField, useFormikContext } from "formik";
+import React, { useContext } from "react";
+import { Formik, Form, useField } from "formik";
 import * as Yup from "yup";
 // import styled from "@emotion/styled";
 // import "./styles.css";
 // import "./styles-custom.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./RecipeForm.module.css";
+import { useAxios } from "../../hooks/use-axios";
+import { MenuContext } from "../../store/menu-context";
 
 const MyTextInput = ({ label, ...props }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -63,7 +64,7 @@ const MyRange = ({ label, ...props }) => {
         type="range"
         className="form-range"
         min="0"
-        max="10"
+        max={props.max}
         {...field}
         {...props}
       />
@@ -95,7 +96,10 @@ const MyRadio = ({ label, ...props }) => {
   );
 };
 
-const RecipeForm = () => {
+const RecipeForm = (props) => {
+  const { response, fetchData } = useAxios();
+  const menuCtx = useContext(MenuContext);
+  const { apiKey } = menuCtx;
   return (
     <>
       <h1 className="h1">Look for a new recipe!</h1>
@@ -104,20 +108,24 @@ const RecipeForm = () => {
           title: "",
           ingredients: "",
           cuisine: "", // added for our select
-          carbs: 0,
+          carbs: 200,
           diet: "",
           acceptedTerms: false, // added for our checkbox
         }}
         validationSchema={Yup.object({
-          title: Yup.string()
-            .min(2, "Must be 15 characters or less")
-            .required("Required"),
+          title: Yup.string().min(2, "Must be 2 characters or more"),
+          // .required("Required"),
           ingredients: Yup.string()
-            .min(2, "Must be 20 characters or less")
-            .required("Required"),
-          diet: Yup.string().required("Required"),
+            .min(2, "Must be 2 characters or more")
+            .matches(
+              /^[abcdefghijklmnopqrstuvwxyz,]+$/,
+              "Please enter online valid characters, comma separated"
+            ),
+          // .required("Required"),
+          diet: Yup.string(),
+          //   .required("Required"),
           acceptedTerms: Yup.boolean()
-            .required("Required")
+            // .required("Required")
             .oneOf([true], "You must accept the terms and conditions."),
           cuisine: Yup.string()
             // specify the set of valid values for job type
@@ -128,73 +136,91 @@ const RecipeForm = () => {
                 "american",
                 "greek",
                 "italian",
-                "latinamerican",
+                "Latin American",
                 "indian",
                 "french",
               ],
               "Invalid Job Type"
-            )
-            .required("Required"),
+            ),
+          // .required("Required"),
           //   carbs: Yup.number().required("Required"),
         })}
-        onSubmit={async (values, { setSubmitting }) => {
-          await new Promise((r) => setTimeout(r, 500));
+        onSubmit={(values, { setSubmitting }) => {
+          setSubmitting(true);
+          console.log(values.ingredients.trim());
+          const query = `?query=${values.title}&cuisine=${
+            values.cuisine
+          }&diet=${values.diet}&maxCarbs=${
+            values.carbs
+          }&includeIngredients=${values.ingredients.trim()}&apiKey=${apiKey}&number=4&addRecipeInformation=true`;
+          console.log(query);
+          fetchData({
+            method: "get",
+            url: `/recipes/complexSearch${query}`,
+            headers: { accept: "*/*" },
+          });
           setSubmitting(false);
+          // console.log(response)
+          props.onSubmit(response);
         }}
       >
-        <Form>
-          <MyTextInput
-            label="Title"
-            name="title"
-            type="text"
-            placeholder="Jane"
-          />
-          <MyTextInput
-            label="Ingredients"
-            name="ingredients"
-            type="text"
-            placeholder="Doe"
-          />
-          <MySelect label="Cuisine" name="cuisine">
-            <option value="">Select a cuisine type</option>
-            <option value="african">African</option>
-            <option value="american">American</option>
-            <option value="italian">Italian</option>
-            <option value="greek">Greek</option>
-            <option value="Latin American">Latin american</option>
-            <option value="indian">Indian</option>
-            <option value="french">French</option>
-          </MySelect>
-          <MyRange label="Carbs" name="carbs" type="range" />
-
-          <div className="radios">
-            <MyRadio
-              label="Gluten free"
-              name="diet"
-              type="radio"
-              value="gluten-free"
+        {({ isSubmitting, isValid, values }) => (
+          <Form>
+            <MyTextInput
+              label="Title"
+              name="title"
+              type="text"
+              placeholder="part of the title"
             />
-
-            <MyRadio label="Paleo" name="diet" type="radio" value="paleo" />
-            <MyRadio label="Vegan" name="diet" type="radio" value="vegan" />
-            <MyRadio
-              label="Vegetarian"
-              name="diet"
-              type="radio"
-              value="vegetarian"
+            <MyTextInput
+              label="Ingredients"
+              name="ingredients"
+              type="text"
+              placeholder="ingredients"
             />
-            <MyCheckbox name="acceptedTerms">
-              I accept the terms and conditions
-            </MyCheckbox>
-          </div>
+            <MySelect label="Cuisine" name="cuisine">
+              <option value="">Select a cuisine type</option>
+              <option value="african">African</option>
+              <option value="american">American</option>
+              <option value="italian">Italian</option>
+              <option value="greek">Greek</option>
+              <option value="Latin American">Latin american</option>
+              <option value="indian">Indian</option>
+              <option value="french">French</option>
+            </MySelect>
 
-          <button
-            className={`btn btn-secondary ${classes.button}`}
-            type="submit"
-          >
-            Submit
-          </button>
-        </Form>
+            <MyRange label="Max carbs 0-200 g" name="carbs" type="range" max="200" />
+
+            <div className="radios">
+              <MyRadio
+                label="Gluten free"
+                name="diet"
+                type="radio"
+                value="gluten-free"
+              />
+
+              <MyRadio label="Paleo" name="diet" type="radio" value="paleo" />
+              <MyRadio label="Vegan" name="diet" type="radio" value="vegan" />
+              <MyRadio
+                label="Vegetarian"
+                name="diet"
+                type="radio"
+                value="vegetarian"
+              />
+              <MyCheckbox name="acceptedTerms">
+                I accept the terms and conditions
+              </MyCheckbox>
+            </div>
+
+            <button
+              className={`btn btn-primary ${classes.button}`}
+              type="submit"
+              disabled={isSubmitting || !isValid}
+            >
+              SUBMIT
+            </button>
+          </Form>
+        )}
       </Formik>
     </>
   );

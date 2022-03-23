@@ -17,9 +17,9 @@ import useInput from "../../hooks/use-input";
 import swal from "sweetalert";
 
 const AuthForm = () => {
-  const navigate = useNavigate();
-  const authCtx = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
+  const authCtx = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const {
     value: enteredEmail,
@@ -76,11 +76,8 @@ const AuthForm = () => {
       });
     setIsLoading(false);
     const expirationTime = new Date(new Date().getTime() + 3600000);
-    console.log(res.data.token);
     authCtx.login(res.data.token, expirationTime.toISOString());
-    navigate("/", { replace: true });
-    resetEmailInput();
-    resetPasswordInput();
+
   }
   return (
     <Card body className={classes.auth}>

@@ -2,76 +2,57 @@ import React, { useReducer } from "react";
 
 export const MenuContext = React.createContext({
   items: [],
-  totalAmount: 0,
   addItem: (item) => {},
   removeItem: (id) => {},
   apiKey: "",
 });
 
-const defaultMenuState = {
-  items: [],
-  totalAmount: 0,
+const retrieveStoredIds = () => {
+  const storedIds = localStorage.getItem("ids");
+  if (storedIds) {
+    const retrieveIds = storedIds.split(",");
+    return retrieveIds;
+  }
+  return [];
 };
 
 const menuReducer = (state, action) => {
   if (action.type === "ADD") {
-    const updatedTotalAmount =
-      state.totalAmount + action.item.price * action.item.amount;
-
-    const existingMenuItemIndex = state.items.findIndex(
-      (item) => item.id === action.item.id
-    );
-    const existingMenuItem = state.items[existingMenuItemIndex];
-    let updatedItems;
-
-    if (existingMenuItem) {
-      const updatedItem = {
-        ...existingMenuItem,
-        amount: existingMenuItem.amount + action.item.amount,
-      };
-      updatedItems = [...state.items];
-      updatedItems[existingMenuItemIndex] = updatedItem;
+    if (state.length > 0) {
+      const updatedState = [...state];
+      const updatedIdsString = updatedState.join() + "," + action.item.id;
+      localStorage.setItem("ids", updatedIdsString);
+      const updatedIds = updatedIdsString.split(",");
+      console.log("on adding at reducer", updatedIds, updatedIdsString);
+      return updatedIds;
     } else {
-      updatedItems = state.items.concat(action.item);
+      const updatedIds=[]
+      updatedIds.push(action.item.id);
+      localStorage.setItem("ids", `${action.item.id}`);
+      console.log("on adding first id at reducer", updatedIds);
+      return updatedIds;
     }
-
-    return {
-      items: updatedItems,
-      totalAmount: updatedTotalAmount,
-    };
   }
   if (action.type === "REMOVE") {
-    const existingMenuItemIndex = state.items.findIndex(
-      (item) => item.id === action.id
-    );
-    const existingItem = state.items[existingMenuItemIndex];
-    const updatedTotalAmount = state.totalAmount - existingItem.price;
-    let updatedItems;
-    if (existingItem.amount === 1) {
-      updatedItems = state.items.filter((item) => item.id !== action.id);
-    } else {
-      const updatedItem = { ...existingItem, amount: existingItem.amount - 1 };
-      updatedItems = [...state.items];
-      updatedItems[existingMenuItemIndex] = updatedItem;
-    }
-
-    return {
-      items: updatedItems,
-      totalAmount: updatedTotalAmount,
-    };
+    const updatedState = [...state];
+    const updatedIds = updatedState.filter((id) => id != action.id);
+    const updatedIdsString = updatedIds.join();
+    localStorage.setItem("ids", updatedIdsString);
+    return updatedIds;
   }
   if (action.type === "CLEAR") {
-    return defaultMenuState;
+    localStorage.removeItem("ids");
+    return [];
   }
 
-  return defaultMenuState;
+  return;
 };
 
-function MenuProvider(props) {
-  const [menuState, dispatchMenuAction] = useReducer(
-    menuReducer,
-    defaultMenuState
-  );
+export default function MenuProvider(props) {
+  const initialIds = retrieveStoredIds();
+  const [menuState, dispatchMenuAction] = useReducer(menuReducer, initialIds);
+
+  console.log("state array del menu ctx:", menuState);
 
   const addItemToMenuHandler = (item) => {
     dispatchMenuAction({ type: "ADD", item: item });
@@ -86,8 +67,7 @@ function MenuProvider(props) {
 
   const menuContext = {
     apiKey: "08431604f5ee4f9e80c2d592bfb26980",
-    items: menuState.items,
-    totalAmount: menuState.totalAmount,
+    items: menuState,
     addItem: addItemToMenuHandler,
     removeItem: removeItemFromMenuHandler,
     clearMenu: clearMenuHandler,
@@ -99,4 +79,3 @@ function MenuProvider(props) {
     </MenuContext.Provider>
   );
 }
-export default MenuProvider;
