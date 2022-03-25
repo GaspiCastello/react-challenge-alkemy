@@ -5,7 +5,6 @@ import {
   CardBody,
   CardSubtitle,
   CardTitle,
-  List,
   Button,
   Container,
   Row,
@@ -25,11 +24,13 @@ export default function MenuItem(props) {
 
   return (
     <Card className={classes.itemCard}>
-      <CardImg  alt="Card image cap" src={props.image} top width="100%" />
+      <CardImg alt="Card image cap" src={props.image} top width="100%" />
       <CardBody>
         <CardTitle tag="h5">{props.title}</CardTitle>
         <CardSubtitle tag="h6">Description:</CardSubtitle>
-       <CardText>{props.summary.replace(new RegExp("<[^>]*>", "g"), "")}</CardText>
+        <CardText
+          dangerouslySetInnerHTML={{ __html: props.summary }}
+        ></CardText>
         <Container>
           <Row>
             <Col>
@@ -41,16 +42,30 @@ export default function MenuItem(props) {
                 {isCollapsed ? "Close Details" : "View Details"}
               </Button>
             </Col>
-            <Col>
-              <Button
-                className={classes.viewmore}
-                color="success"
-                size="sm"
-                onClick={props.onAdd}
-              >
-                Add to menu
-              </Button>
-            </Col>
+            {menuCtx.items.filter((id) => id == props.id).length > 0 && (
+              <Col>
+                <Button
+                  className={classes.viewmore}
+                  color="danger"
+                  size="sm"
+                  onClick={props.onRemove}
+                >
+                  Remove
+                </Button>
+              </Col>
+            )}
+            {menuCtx.items.filter((id) => id == props.id).length == 0 && (
+              <Col>
+                <Button
+                  className={classes.viewmore}
+                  color="success"
+                  size="sm"
+                  onClick={props.onAdd}
+                >
+                  Add to menu
+                </Button>
+              </Col>
+            )}
           </Row>
         </Container>
         {isCollapsed && (
@@ -61,7 +76,7 @@ export default function MenuItem(props) {
                   <li>Price per serving: {`$${props.price}`}</li>
                   <li>Health Score: {`${props.healthScore}%`}</li>
                   <li>Preparation is {`${props.readyInMinutes}`} minutes</li>
-                  <li>{props.vegan?'Vegan':'Not vegan'}</li> 
+                  <li>{props.vegan ? "Vegan" : "Not vegan"}</li>
                 </ul>
               </Col>
             </Row>

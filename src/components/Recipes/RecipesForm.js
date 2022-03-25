@@ -1,13 +1,8 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Formik, Form, useField } from "formik";
 import * as Yup from "yup";
-// import styled from "@emotion/styled";
-// import "./styles.css";
-// import "./styles-custom.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import classes from "./RecipeForm.module.css";
-import { useAxios } from "../../hooks/use-axios";
-import { MenuContext } from "../../store/menu-context";
+import { Input, Label } from "reactstrap";
 
 const MyTextInput = ({ label, ...props }) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
@@ -15,8 +10,8 @@ const MyTextInput = ({ label, ...props }) => {
   const [field, meta] = useField(props);
   return (
     <>
-      <label htmlFor={props.id || props.name}>{label}</label>
-      <input className="form-control" {...field} {...props} />
+      <Label htmlFor={props.id || props.name}>{label}</Label>
+      <Input {...field} {...props} />
       {meta.touched && meta.error ? (
         <div className="error">{meta.error}</div>
       ) : null}
@@ -28,8 +23,8 @@ const MySelect = ({ label, ...props }) => {
   const [field, meta] = useField(props);
   return (
     <>
-      <label htmlFor={props.id || props.name}>{label}</label>
-      <select className="form-control" {...field} {...props} />
+      <Label htmlFor={props.id || props.name}>{label}</Label>
+      <Input type="select" {...field} {...props} />
       {meta.touched && meta.error ? <p>{meta.error}</p> : null}
     </>
   );
@@ -38,15 +33,10 @@ const MyCheckbox = ({ children, ...props }) => {
   const [field, meta] = useField({ ...props, type: "checkbox" });
   return (
     <>
-      <label className={`${classes.checkbox} form-check-form-check-label`}>
-        <input
-          className="form-check-input"
-          {...field}
-          {...props}
-          type="checkbox"
-        />
+      <Label>
+        <Input {...field} {...props} type="checkbox" />
         {children}
-      </label>
+      </Label>
       {meta.touched && meta.error ? (
         <div className="error">{meta.error}</div>
       ) : null}
@@ -57,17 +47,10 @@ const MyRange = ({ label, ...props }) => {
   const [field, meta] = useField({ ...props, type: "range" });
   return (
     <>
-      <label className="range" htmlFor={props.id || props.name}>
-        {label}
-      </label>
-      <input
-        type="range"
-        className="form-range"
-        min="0"
-        max={props.max}
-        {...field}
-        {...props}
-      />
+      <Label htmlFor={props.id || props.name}>
+        {label}, is <b>{field.value}</b>
+      </Label>
+      <Input type="range" {...field} {...props} />
 
       {meta.touched && meta.error ? (
         <div className="error">{meta.error}</div>
@@ -78,16 +61,11 @@ const MyRange = ({ label, ...props }) => {
 const MyRadio = ({ label, ...props }) => {
   const [field, meta] = useField({ ...props, type: "radio" });
   return (
-    <div className="form-check">
-      <label className="form-check-label">
-        <input
-          className="form-check-input"
-          {...field}
-          {...props}
-          type="radio"
-        />
+    <div>
+      <Label>
+        <Input {...field} {...props} type="radio" />
         {label}
-      </label>
+      </Label>
 
       {meta.touched && meta.error ? (
         <div className="error">{meta.error}</div>
@@ -97,19 +75,18 @@ const MyRadio = ({ label, ...props }) => {
 };
 
 const RecipeForm = (props) => {
-  const { response, fetchData } = useAxios();
-  const menuCtx = useContext(MenuContext);
-  const { apiKey } = menuCtx;
   return (
     <>
       <h1 className="h1">Look for a new recipe!</h1>
       <Formik
         initialValues={{
-          title: "",
-          ingredients: "",
+          query: "",
           cuisine: "", // added for our select
-          carbs: 200,
           diet: "",
+          includeIngredients: "",
+          maxCarbs: 120,
+          addRecipeInformation: true,
+          number: 3,
           acceptedTerms: false, // added for our checkbox
         }}
         validationSchema={Yup.object({
@@ -147,34 +124,28 @@ const RecipeForm = (props) => {
         })}
         onSubmit={(values, { setSubmitting }) => {
           setSubmitting(true);
-          console.log(values.ingredients.trim());
-          const query = `?query=${values.title}&cuisine=${
-            values.cuisine
-          }&diet=${values.diet}&maxCarbs=${
-            values.carbs
-          }&includeIngredients=${values.ingredients.trim()}&apiKey=${apiKey}&number=4&addRecipeInformation=true`;
-          console.log(query);
-          fetchData({
-            method: "get",
-            url: `/recipes/complexSearch${query}`,
-            headers: { accept: "*/*" },
-          });
+          props.onSubmit(values);
           setSubmitting(false);
-          // console.log(response)
-          props.onSubmit(response);
         }}
+        // onSubmit={(values, { setSubmitting }) => {
+        //   console.log(values);
+        //   setTimeout(() => {
+        //     alert(JSON.stringify(values, null, 2));
+        //     setSubmitting(false);
+        //   }, 400);
+        // }}
       >
-        {({ isSubmitting, isValid, values }) => (
+        {({ isSubmitting, isValid }) => (
           <Form>
             <MyTextInput
               label="Title"
-              name="title"
+              name="query"
               type="text"
               placeholder="part of the title"
             />
             <MyTextInput
               label="Ingredients"
-              name="ingredients"
+              name="includeIngredients"
               type="text"
               placeholder="ingredients"
             />
@@ -189,7 +160,13 @@ const RecipeForm = (props) => {
               <option value="french">French</option>
             </MySelect>
 
-            <MyRange label="Max carbs 0-200 g" name="carbs" type="range" max="200" />
+            <MyRange
+              label="Max carbs in grams "
+              name="maxCarbs"
+              type="range"
+              max="120"
+              min="5"
+            />
 
             <div className="radios">
               <MyRadio

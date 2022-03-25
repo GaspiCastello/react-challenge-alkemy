@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { Link } from "react-router-dom";
 import { Navbar, NavbarBrand, NavItem, Button } from "reactstrap";
 import AuthContext from "../../store/auth-context";
 import classes from './MainNavigation.module.css'
@@ -14,9 +15,10 @@ const MainNavigation = () => {
 
   return (
       <Navbar className={classes.navbar}  expand="md" sticky="top" dark>
-        <NavbarBrand href="/">Alkemy Challenge</NavbarBrand>
+        <NavbarBrand href="/">Verbena Restó</NavbarBrand>
         { isLoggedIn && (
           <NavItem>
+            <Link to='/home'><Button color="primary">Menu</Button></Link>
             <Button onClick={logoutHandler}>Logout</Button>
           </NavItem>
         )}
