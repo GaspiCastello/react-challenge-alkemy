@@ -90,9 +90,9 @@ const RecipeForm = (props) => {
           acceptedTerms: false, // added for our checkbox
         }}
         validationSchema={Yup.object({
-          title: Yup.string().min(2, "Must be 2 characters or more"),
+          query: Yup.string().min(2, "Must be 2 characters or more"),
           // .required("Required"),
-          ingredients: Yup.string()
+          includeIngredients: Yup.string()
             .min(2, "Must be 2 characters or more")
             .matches(
               /^[abcdefghijklmnopqrstuvwxyz,]+$/,

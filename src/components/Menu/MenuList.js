@@ -118,8 +118,8 @@ export default function MenuList(props) {
           response.length /
           100
         ).toFixed(2),
-        healthScoreAverage: reducedParams.healthScore / response.length,
-        preparationTimeAverage: reducedParams.readyInMinutes / response.length,
+        healthScoreAverage:( reducedParams.healthScore / response.length).toFixed(0),
+        preparationTimeAverage: (reducedParams.readyInMinutes / response.length).toFixed(0),
       };
     }
   };
