@@ -5,7 +5,7 @@ This project is part of the challenge to enter in the acceleration program of Al
 ## Functionality and scope
 
 * Provide a safe login with auto logout and preventing to loose session when browser refreshes.
-* Validating the form when incorrect fields and handling errors in the post request.
+* Validating the form when a field is incorrect and handling errors in the post request.
 * Searching for recipes with a wide range of criteria: Ingredientes, Title, Max carbs, Cuisine, Diet.
 * Add and remove a recipe from the results checking restrictions: only two recipes vegan and two not vegan.
 * Also show in the menu page this metrics: Acumulated price, Average health score and Average time of preparation.
