@@ -1,6 +1,6 @@
 # Menu app for a restaurant
 
-This project is part of the challenge to enter in the acceleration program of Alkemy
+This is a React app, part of the front end challenge to enter in the acceleration program of Alkemy
 
 ## Functionality and scope
 
