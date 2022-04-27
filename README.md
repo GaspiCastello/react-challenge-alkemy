@@ -9,6 +9,7 @@ This is a React app, part of the front end challenge to enter in the acceleratio
 * Searching for recipes with a wide range of criteria: Ingredientes, Title, Max carbs, Cuisine, Diet.
 * Add and remove a recipe from the results checking restrictions: only two recipes vegan and two not vegan.
 * Also show in the menu page this metrics: Acumulated price, Average health score and Average time of preparation.
+* Individual recipe component must show details of it in Menu as well as in search page.
 
 
 ## Install and start
