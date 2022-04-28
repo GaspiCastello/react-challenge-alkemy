@@ -47,7 +47,7 @@ const AuthForm = () => {
     }
     setIsLoading(true);
     const res = await axios
-      .post("http://challenge-react.alkemy.org/", {
+      .post("https://challenge-react.alkemy.org/", {
         email: enteredEmail,
         password: enteredPassword,
       })
