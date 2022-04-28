@@ -42,7 +42,8 @@ export default function MenuItem(props) {
                 {isCollapsed ? "Close Details" : "View Details"}
               </Button>
             </Col>
-            {menuCtx.items.filter((id) => id == props.id).length > 0 && (
+            {menuCtx.items.filter((id) => id === props.id.toString()).length >
+              0 && (
               <Col>
                 <Button
                   className={classes.viewmore}
@@ -54,7 +55,9 @@ export default function MenuItem(props) {
                 </Button>
               </Col>
             )}
-            {menuCtx.items.filter((id) => id == props.id).length == 0 && (
+
+            {menuCtx.items.filter((id) => id === props.id.toString()).length ===
+              0 && (
               <Col>
                 <Button
                   className={classes.viewmore}

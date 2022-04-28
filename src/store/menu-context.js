@@ -24,12 +24,12 @@ const menuReducer = (state, action) => {
       const updatedVeganQuota = state.veganQuota + 1;
       localStorage.setItem("veganQuota", updatedVeganQuota);
       const updatedIds = [...state.ids];
-      updatedIds.push(action.item.id);
+      updatedIds.push(action.item.id.toString());
       localStorage.setItem("ids", updatedIds);
       return { ids: updatedIds, veganQuota: updatedVeganQuota };
     } else if (!action.item.vegan && restQuota < 2) {
       const updatedIds = [...state.ids];
-      updatedIds.push(action.item.id);
+      updatedIds.push(action.item.id.toString());
       localStorage.setItem("ids", updatedIds);
       return { ids: updatedIds, veganQuota: state.veganQuota };
     }
@@ -38,7 +38,9 @@ const menuReducer = (state, action) => {
   if (action.type === "REMOVE") {
     console.log("ids on remove dispatch", state.ids);
     const updatedIds = [...state.ids];
-    const filteredIds = updatedIds.filter((id) => id != action.item.id);
+    const filteredIds = updatedIds.filter(
+      (id) => id !== action.item.id.toString()
+    );
     localStorage.setItem("ids", filteredIds);
     if (action.item.vegan) {
       const updatedVeganQuota = state.veganQuota - 1;
@@ -64,15 +66,15 @@ export default function MenuProvider(props) {
   };
 
   const removeItemFromMenuHandler = (item) => {
-    dispatchMenuAction({ type: "REMOVE", item: item });
+    dispatchMenuAction({ type: "REMOVE", item });
   };
   const clearMenuHandler = () => {
     dispatchMenuAction({ type: "CLEAR" });
   };
 
   const menuContext = {
-    // apiKey: "08431604f5ee4f9e80c2d592bfb26980",
-    apiKey: "a9e0fe98a0554e9ab0eb54dfa00ed190",
+    apiKey: "08431604f5ee4f9e80c2d592bfb26980",
+    // apiKey: "a9e0fe98a0554e9ab0eb54dfa00ed190",
     items: menuState.ids,
     addItem: addItemToMenuHandler,
     removeItem: removeItemFromMenuHandler,

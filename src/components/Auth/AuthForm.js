@@ -1,5 +1,4 @@
 import { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
 
 import axios from "axios";
 import AuthContext from "../../store/auth-context";
@@ -19,7 +18,6 @@ import swal from "sweetalert";
 const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const authCtx = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const {
     value: enteredEmail,
@@ -27,7 +25,6 @@ const AuthForm = () => {
     hasError: emailInputHasError,
     valueChangeHandler: emailChangeHandler,
     inputBlurHandler: emailBlurHandler,
-    reset: resetEmailInput,
   } = useInput((value) => value.includes("@"));
   const {
     value: enteredPassword,
@@ -35,7 +32,6 @@ const AuthForm = () => {
     hasError: passwordInputHasError,
     valueChangeHandler: passwordChangeHandler,
     inputBlurHandler: passwordBlurHandler,
-    reset: resetPasswordInput,
   } = useInput((value) => value.trim().length > 3);
   let formIsValid = false;
 
@@ -72,12 +68,10 @@ const AuthForm = () => {
           // Something happened in setting up the request that triggered an Error
           return swal(console.log("Error", error.message));
         }
-        
       });
     setIsLoading(false);
     const expirationTime = new Date(new Date().getTime() + 3600000);
     authCtx.login(res.data.token, expirationTime.toISOString());
-
   }
   return (
     <Card body className={classes.auth}>
