@@ -1,7 +1,5 @@
-import { useContext } from "react";
 import { Route, Navigate, Routes } from "react-router-dom";
 
-import AuthContext from "./store/auth-context";
 import Layout from "./components/Layout/Layout";
 import HomePage from "./pages/HomePage";
 import SearchPage from "./pages/SearchPage";
