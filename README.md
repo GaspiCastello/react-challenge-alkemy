@@ -1,6 +1,7 @@
-# Menu app for a restaurant
-
-This is a React app, part of the front end challenge to enter in the acceleration program of Alkemy
+# Menu app for a restaurant 
+* [Deployed](https://main--gentle-gumdrop-53b945.netlify.app) ->[Config your browser first](https://experienceleague.adobe.com/docs/target/using/experiences/vec/troubleshoot-composer/mixed-content.html?lang=en
+)
+* This is a React app, part of the front end challenge to enter in the acceleration program of Alkemy
 
 ## Functionality and scope
 
